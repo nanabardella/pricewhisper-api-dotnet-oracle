@@ -102,9 +102,14 @@ sku="F1"
 echo "Criando Grupo de Recursos..."
 az group create --name "$rg" --location "$location" 1>/dev/null
 echo "Criando Plano de Serviço..."
-az appservice plan create --name "$plan" --resource-group "$rg" --location "$location" --sku "$sku" --is-linux false 1>/dev/null
+az appservice plan create --name "$plan" --resource-group "$rg" --location "$location" --sku "$sku" 1>/dev/null
 echo "Criando Serviço de Aplicativo..."
 az webapp create --resource-group "$rg" --plan "$plan" --runtime "$runtime" --name "$app" 1>/dev/null
+
+# Variaveis de ambiente ASP.NET Core; a senha vem da variavel secreta da pipeline.
+az webapp config appsettings set --resource-group "$rg" --name "$app" \
+  --settings "ConnectionStrings__OracleConnection=Data Source=${DbHost}:${DbPort}/${DbSid};User ID=${DbUser};Password=${DbPass};" \
+  "Swagger__Enabled=true" --output none
 
 # Captura estado atual dos logs
 app_logging="$(az webapp log show -g "$rg" -n "$app" --query 'applicationLogs.fileSystem.level' -o tsv 2>/dev/null || true)"
