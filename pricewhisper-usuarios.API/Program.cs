@@ -40,7 +40,7 @@ builder.Services.AddHttpClient<ICNPJaService, CNPJaService>()
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Swagger:Enabled"))
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -51,5 +51,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/health", () => Results.Ok(new { status = "ok", atividade = "CP6", rm = "561439" }))
+    .WithTags("Health");
+
+app.MapGet("/wellcome", () => Results.Text("CP6 - RM561439 - versao 1"))
+    .WithName("Wellcome")
+    .WithTags("Health");
 
 app.Run();
