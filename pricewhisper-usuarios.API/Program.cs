@@ -55,7 +55,7 @@ app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "ok", atividade = "CP6", rm = "561439" }))
     .WithTags("Health");
 
-app.MapGet("/wellcome", () => Results.Text("CP6 - RM561439 - versao 1"))
+app.MapGet("/wellcome", () => Results.Text("CP6 - RM561439 - versao 2"))
     .WithName("Wellcome")
     .WithTags("Health");
 
