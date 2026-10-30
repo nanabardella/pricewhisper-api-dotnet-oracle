@@ -95,14 +95,14 @@ rg="rg-api-dotnet"
 location=${LOCATION}
 plan="planApiDotnet"
 app=${NOME_WEBAPP}
-runtime="dotnet:8"
+runtime="DOTNETCORE:8.0"
 sku="F1"
 
 # Criar os Recursos necessários em Nuvem
 echo "Criando Grupo de Recursos..."
 az group create --name "$rg" --location "$location" 1>/dev/null
 echo "Criando Plano de Serviço..."
-az appservice plan create --name "$plan" --resource-group "$rg" --location "$location" --sku "$sku" 1>/dev/null
+az appservice plan create --name "$plan" --resource-group "$rg" --location "$location" --sku "$sku" --is-linux 1>/dev/null
 echo "Criando Serviço de Aplicativo..."
 az webapp create --resource-group "$rg" --plan "$plan" --runtime "$runtime" --name "$app" 1>/dev/null
 
