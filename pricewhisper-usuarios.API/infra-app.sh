@@ -111,25 +111,8 @@ az webapp config appsettings set --resource-group "$rg" --name "$app" \
   --settings "ConnectionStrings__OracleConnection=Data Source=${DbHost}:${DbPort}/${DbSid};User ID=${DbUser};Password=${DbPass};" \
   "Swagger__Enabled=true" --output none
 
-# Captura estado atual dos logs
-app_logging="$(az webapp log show -g "$rg" -n "$app" --query 'applicationLogs.fileSystem.level' -o tsv 2>/dev/null || true)"
-ws_logging="$(az webapp log show -g "$rg" -n "$app" --query 'httpLogs.fileSystem.enabled' -o tsv 2>/dev/null || true)"
-det_errors="$(az webapp log show -g "$rg" -n "$app" --query 'detailedErrorMessages.enabled' -o tsv 2>/dev/null || true)"
-failed_req="$(az webapp log show -g "$rg" -n "$app" --query 'failedRequestsTracing.enabled' -o tsv 2>/dev/null || true)"
+# Log Stream do container gerenciado do App Service Linux.
+az webapp log config --resource-group "$rg" --name "$app" \
+  --docker-container-logging filesystem --output none
 
-# Condição: aplicar somente se algo não estiver habilitado como desejado
-if [ "$app_logging" != "Information" ] || [ "$ws_logging" != "true" ] || [ "$det_errors" != "true" ] || [ "$failed_req" != "true" ]; then
-  echo "Habilitando Logs do Serviço de Aplicativo..."
-  az webapp log config \
-    --resource-group "$rg" \
-    --name "$app" \
-    --application-logging filesystem \
-    --web-server-logging filesystem \
-    --level information \
-    --detailed-error-messages true \
-    --failed-request-tracing true 1>/dev/null
-else
-  echo "Logs já configurados"
-fi
-
-echo echo "[OK] Objetos da Azure prontos"
+echo "[OK] Objetos da Azure prontos"
